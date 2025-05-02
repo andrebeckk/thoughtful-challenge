@@ -1,62 +1,47 @@
-# Package Sorting System
+def sort(width: float, height: float, length: float, mass: float):
+    """Classify a package into one of the three stacks based on its dimensions and mass.
 
-This project implements a package sorting function for Thoughtful's robotic automation factory. The function sorts packages into different stacks based on their dimensions and mass.
+    Args:
+        width (float): Width of the package in centimeters.
+        height (float): Height of the package in centimeters.
+        length (float): Length of the package in centimeters.
+        mass (float): Mass of the package in kilograms.
 
-## Objective
+    Returns:
+        str: Name of the stack where the package should be placed ('STANDARD', 'SPECIAL' or 'REJECTED').
+    """
 
-The function sorts packages according to their volume and mass into three stacks:
-- **STANDARD**: Normal packages (not bulky or heavy)
-- **SPECIAL**: Packages that are either bulky OR heavy
-- **REJECTED**: Packages that are BOTH bulky AND heavy
-
-## Sorting Criteria
-
-- A package is **bulky** if:
-  - Its volume (Width × Height × Length) is ≥ 1,000,000 cm³, OR
-  - Any single dimension is ≥ 150 cm
-- A package is **heavy** if:
-  - Its mass is ≥ 20 kg
-
-## Implementation
-
-The solution is implemented in Python with a single function:
-
-```python
-def sort(width, height, length, mass):
-    # Calculate volume
+    # Define maximum reasonable values that could be changed in the future based on requirements
+    MAX_DIMENSION = 1000  # cm
+    MAX_MASS = 1000       # kg
+    
+    if max(width, height, length) > MAX_DIMENSION or mass > MAX_MASS:
+        raise ValueError("Dimensions or mass are too large")
+    
+    # Type validation
+    try:
+        width, height, length, mass = float(width), float(height), float(length), float(mass)
+    except (ValueError, TypeError):
+        raise TypeError("All inputs must be numeric values")
+        
+    # Positive values validation
+    if width <= 0 or height <= 0 or length <= 0 or mass <= 0:
+        raise ValueError("All dimensions and mass must be positive values")
+        
+    # Sorting logic
     volume = width * height * length
-    
-    # Check if the package is bulky
     is_bulky = volume >= 1000000 or width >= 150 or height >= 150 or length >= 150
-    
-    # Check if the package is heavy
     is_heavy = mass >= 20
     
-    # Determine the appropriate stack
     if is_bulky and is_heavy:
         return "REJECTED"
     elif is_bulky or is_heavy:
         return "SPECIAL"
     else:
         return "STANDARD"
-```
+    
 
-## Usage
-
-1. Import the function into your project
-2. Call the function with the package dimensions (in cm) and mass (in kg)
-3. The function returns a string indicating the stack name
-
-Example:
-```python
-result = sort(100, 50, 30, 15)  # Returns "SPECIAL" (bulky but not heavy)
-```
-
-## Testing
-
-The solution includes test cases to verify correctness:
-
-```python
+# Test cases
 def test_sort():
     # Standard package
     assert sort(10, 10, 10, 1) == "STANDARD"
@@ -72,7 +57,7 @@ def test_sort():
     
     # Bulky by dimension package
     assert sort(160, 10, 10, 5) == "SPECIAL"
-    
+
     try:
         sort(-1, 10, 10, 10)
         assert False, "Should have raised ValueError for negative dimensions."
@@ -101,4 +86,3 @@ def test_sort():
 
 # Run tests
 test_sort()
-```
